@@ -4,16 +4,25 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.regex.*;
+import java.util.HashMap;
 
 public class emailextract {
 
 
     public static void main(String[] args) {
 
-        Pattern pattern = Pattern.compile("([a-z-._]+)@softwire.com", Pattern.CASE_INSENSITIVE);
+        Pattern pattern = Pattern.compile("[a-z-._]+@([a-z0-9_.-]+[a-z])", Pattern.CASE_INSENSITIVE);
+        String emailTextFile = "/Users/ftarthur/Desktop/Training/emailextraction/learningregex/src/sample.txt";
 
+        System.out.println(FindFrequencyOfEmails(pattern, emailTextFile));
+
+    }
+
+    private static HashMap<String, Integer> FindFrequencyOfEmails(Pattern pattern, String input) {
+
+        HashMap<String, Integer> emails = new HashMap<String, Integer>();
         try {
-            FileReader reader = new FileReader("/Users/ftarthur/Desktop/Training/emailextraction/learningregex/src/sample.txt");
+            FileReader reader = new FileReader(input);
             BufferedReader buff = new BufferedReader(reader);
 
             String line;
@@ -23,19 +32,18 @@ public class emailextract {
             while ((line = buff.readLine()) != null) {
                 Matcher matcher = pattern.matcher(line);
                 while (matcher.find()) {
-                    System.out.println(matcher.group());
+                    String domain = matcher.group(1);
                     count++;
+                    emails.putIfAbsent(domain, 0);
+                    emails.put(domain, emails.get(domain) + 1);
                 }
             }
             reader.close();
-            System.out.println(count);
         }
         catch (IOException e) {
             e.printStackTrace();
         }
-
-
-
+        return emails;
     }
 
 }
